@@ -60,8 +60,8 @@ class DeliveryService {
     }
 
     private void CloneGitRepo(string tmpProjectPath, string gitPath, string branch) {
-        branch = EscapeForCommand(branch);
-        gitPath = EscapeForCommand(gitPath);
+        branch = ExtensionMethods.EscapeForCommand(branch);
+        gitPath = ExtensionMethods.EscapeForCommand(gitPath);
 
         using var proc = new Process() {
             StartInfo = new() {
@@ -132,6 +132,9 @@ class DeliveryService {
     }
 
     private void CopyCompilationToOutput(string sorucePath, string destinationPath) {
+        sorucePath = ExtensionMethods.EscapeForCommand(sorucePath);
+        destinationPath = ExtensionMethods.EscapeForCommand(destinationPath);
+
         using var proc = new Process() {
             StartInfo = new() {
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -153,6 +156,4 @@ class DeliveryService {
                 new Exception(error));
         }
     }
-
-    private string EscapeForCommand(string command) => $"\"{command.Replace("\"", "\\\"")}\"";
 }

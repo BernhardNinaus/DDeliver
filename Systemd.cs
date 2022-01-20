@@ -29,7 +29,8 @@ static class Systemd {
         // If currentState == newState
         if (IsActive(service) == newState) return false;
 
-        _proc.StartInfo.Arguments = $"{(newState? "stop" : "start")} {EscapeForCommand(service)}";
+        _proc.StartInfo.Arguments = $"{(newState? "stop" : "start")} " + 
+            $"{ExtensionMethods.EscapeForCommand(service)}";
         _proc.Start();
 
         _proc.StandardOutput.ReadToEnd();
@@ -53,7 +54,7 @@ static class Systemd {
     /// </summary>
     /// <returns>True when the service is running.</returns>
     public static bool IsActive(string service) {
-        _proc.StartInfo.Arguments = $"is-activ {EscapeForCommand(service)}";
+        _proc.StartInfo.Arguments = $"is-activ {ExtensionMethods.EscapeForCommand(service)}";
         _proc.Start();
 
         var isActive = _proc.StandardOutput.ReadToEnd() == "inactive\n";
@@ -67,7 +68,4 @@ static class Systemd {
 
         return isActive;
     }
-
-    private static string EscapeForCommand(string command) 
-        => $"\"{command.Replace("\"", "\\\"")}\"";
 }
