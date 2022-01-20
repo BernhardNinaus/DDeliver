@@ -1,8 +1,7 @@
 using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 class ServerConfig {
-    public string[]? DefaultBuildParam { get; set; }
+    public IEnumerable<string> DefaultBuildParam { get; set; } = Array.Empty<string>();
     public Dictionary<string, ProjectConfig> Projects { get; set; } = new();
 }
 
@@ -10,7 +9,7 @@ class ProjectConfig {
     public string GitRepo { get; set; } = string.Empty;
     public string OnBranch { get; set; } = "main";
     public string CSProjFile { get; set; } = string.Empty;
-    public string[]? BuildParams { get; set; }
+    public IEnumerable<string> BuildParams { get; set; } = Array.Empty<string>();
     public string OutputFolder { get; set; } = string.Empty;
     public bool CleanOutpuFolder { get; set; } = false;
     public string? SystemdService { get; set; }
@@ -47,7 +46,8 @@ static class ConfigProvider {
     };
 
     public static ServerConfig GetConfig(IDeserializer deserializer) {
-        if (!File.Exists(ConfigFilePath)) throw new Exception($"No config found at: {ConfigFilePath}");
+        if (!File.Exists(ConfigFilePath)) 
+            throw new Exception($"No config found at: {ConfigFilePath}");
         return deserializer.Deserialize<ServerConfig>(File.ReadAllText(ConfigFilePath));
     }
 }

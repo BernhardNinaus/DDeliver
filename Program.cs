@@ -27,8 +27,6 @@ if (!args.Any()) {
 var serializer = new SerializerBuilder().Build();
 var deserializer = new DeserializerBuilder().Build();
 
-
-
 if (args[0] == "--example-config") {
     var yaml = serializer.Serialize(ConfigProvider.ExampleConfig);
     Console.WriteLine(yaml);
@@ -45,6 +43,8 @@ try {
     return;
 }
 
+var deliverer = new DeliveryService(serverConfig);
+
 switch (args[0]) {
     case "-h":
     case "--help":
@@ -53,13 +53,32 @@ switch (args[0]) {
 
     case "-d":
     case "--deliver":
-        throw new NotImplementedException("-d / --deliver not implemented");
+        if (args.Length == 1)
+            throw new Exception("No prject(s) provided to deliver!");
+
+        foreach (var projectName in args[1..])
+            deliverer.Deliver(projectName);
+
+        return;
 
     case "--d-all":
-        throw new NotImplementedException("--d-all not implemented");
+        foreach (var projectName in serverConfig.Projects.Keys)
+            deliverer.Deliver(projectName);
+
+        return;
 
     case "--d-git-repo":
-        throw new NotImplementedException("--d-git-repo not implemented");
+        if (args.Length == 1)
+            throw new Exception("No prject(s) provided to deliver!");
+
+        var effectedRepos = args[1..];
+
+        foreach (var (projectName, _) in serverConfig.Projects
+                                            .Where(w => effectedRepos.Contains(w.Value.GitRepo)))
+            deliverer.Deliver(projectName);
+
+        return;
+
     case "--hook":
         throw new NotImplementedException("--hook not implemented");
 
