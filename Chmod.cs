@@ -14,12 +14,15 @@ static class Chmod {
         }
     };
 
-    public static void SetPerimissions(string path, string permission = "700") {
+    public static void SetPerimissions(
+        string path, string permission = "700", bool recursive = false) 
+    {
         if (!Regex.Match(permission, "^[0-7]{1,3}$").Success) {
             Console.WriteLine("Permission input is invalid! [0-7]{1,3}");
         }
 
-        _proc.StartInfo.Arguments = $"{permission} {ExtensionMethods.EscapeForCommand(path)}";
+        _proc.StartInfo.Arguments = $"{(recursive ? "-R" : "")} {permission}" + 
+            $" {ExtensionMethods.EscapeForCommand(path)}";
 
         _proc.Start();
         _proc.WaitForExit();
@@ -27,7 +30,8 @@ static class Chmod {
         var error = _proc.StandardError.ReadToEnd();
 
         if (_proc.ExitCode != 0) {
-            throw new Exception($"Error while changing filepermission (exitcode: {_proc.ExitCode}).", 
+            throw new Exception($"Error while changing filepermission " + 
+                                $"(exitcode: {_proc.ExitCode}).", 
                 new Exception(error));
         }
     }
