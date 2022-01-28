@@ -36,7 +36,7 @@ static class Systemd {
         _proc.StandardOutput.ReadToEnd();
         _proc.WaitForExit();
 
-        if (_proc.ExitCode != 0 || _proc.ExitCode != 3) {
+        if (_proc.ExitCode != 0 && _proc.ExitCode != 3) {
             throw new Exception($"Error while {(newState ? "starting" : "stopping")} service " +
                 $"'{service}' (exitcode: {_proc.ExitCode}).");
         }
