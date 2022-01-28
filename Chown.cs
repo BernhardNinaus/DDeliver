@@ -15,8 +15,11 @@ static class Chown {
     };
 
     public static void SetUserGroup(string userGroup, string path, bool recursive = false) {
+        Console.WriteLine($"[DBG ] Chown-SetUserGroup {userGroup}");
+
         if (!Regex.Match(userGroup, "[_a-z][-0-9_a-z]*:[_a-z][-0-9_a-z]*").Success) {
-            Console.WriteLine("User:Group not a vild name ([_a-z][-0-9_a-z]*:[_a-z][-0-9_a-z]*)");
+            Console.WriteLine("[DBG ] Chown-SetUserGroup: Not a valid name " +
+                            $"([_a-z][-0-9_a-z]*:[_a-z][-0-9_a-z]*)");
         }
 
         _proc.StartInfo.Arguments = $"{(recursive ? "-R" : "")} {userGroup} " + 

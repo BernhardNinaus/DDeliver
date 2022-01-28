@@ -17,8 +17,9 @@ static class Chmod {
     public static void SetPerimissions(
         string path, string permission = "700", bool recursive = false) 
     {
+        Console.WriteLine($"[DBG ] Chmod-SetPermission: {permission}");
         if (!Regex.Match(permission, "^[0-7]{1,3}$").Success) {
-            Console.WriteLine("Permission input is invalid! [0-7]{1,3}");
+            Console.WriteLine("[DBG ] Chmod-SetPermission: input is invalid! [0-7]{1,3}");
         }
 
         _proc.StartInfo.Arguments = $"{(recursive ? "-R" : "")} {permission}" + 

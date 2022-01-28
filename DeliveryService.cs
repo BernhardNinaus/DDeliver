@@ -11,6 +11,7 @@ class DeliveryService {
     public void Deliver(string projectName) {
         var tmpProjectPath = "";
         try {
+            Console.WriteLine($"[INFO] ####################### Deliver project {projectName}");
 
             if (!_serverConfig.Projects.ContainsKey(projectName)) {
                 throw new Exception($"Could not find project '{projectName}' in configuration.");
@@ -20,48 +21,62 @@ class DeliveryService {
             tmpProjectPath = $"/tmp/{projectName}";
             var tmpCompileOutput = $"{tmpProjectPath}/compileOutput";
 
+            Console.WriteLine($"[INFO] Ensure tmpProjectPaht '{tmpProjectPath}'");
             EnsureEmptyFolder(tmpProjectPath);
 
+            Console.WriteLine($"[INFO] Clone git repo '{project.GitRepo}' -> {project.OnBranch}");
             CloneGitRepo(tmpProjectPath, project.GitRepo, project.OnBranch);
 
+            Console.WriteLine($"[INFO] Compile Project");
             CompileDotNet(tmpProjectPath, tmpCompileOutput, project);
 
             var needsStart = false;
-            if (!string.IsNullOrWhiteSpace(project.SystemdService))
+            Console.WriteLine($"[INFO] Systemtd service available?");
+            if (!string.IsNullOrWhiteSpace(project.SystemdService)) {
                 needsStart = Systemd.Stop(project.SystemdService);
+                if (needsStart) Console.WriteLine($"[INFO] Systemtd service needs a restart later");
+            }
 
-            if (project.CleanOutpuFolder || !Directory.Exists(project.OutputFolder)) 
+            Console.WriteLine($"[INFO] Clean or create output folder? {project.OutputFolder}");
+            if (project.CleanOutpuFolder || !Directory.Exists(project.OutputFolder)) {
                 EnsureEmptyFolder(project.OutputFolder);
+            }
 
+            Console.WriteLine($"[INFO] Copy to output folder");
             CopyCompilationToOutput(tmpCompileOutput, project.OutputFolder);
 
-            if (!string.IsNullOrWhiteSpace(project.UserGroup))
+            Console.WriteLine($"[INFO] Need to set user and group?");
+            if (!string.IsNullOrWhiteSpace(project.UserGroup)) {
                 Chown.SetUserGroup(project.UserGroup, project.OutputFolder, true);
+            }
 
             if (!string.IsNullOrWhiteSpace(project.SystemdService) && needsStart) {
+                Console.WriteLine($"[INFO] Restart systemtd service");
                 Systemd.Start(project.SystemdService);
-                System.Threading.Thread.Sleep(2 * 1000);
             }
 
         } catch (Exception ex) {
-            Console.Error.WriteLine($"Expection while delivering project '{projectName}':");
+            Console.Error.WriteLine($"[ERRO] Expection while delivering project '{projectName}':");
 
             Console.Error.WriteLine($"\t{ex.Message}");
             if (ex.InnerException is not null) 
                 Console.Error.WriteLine($"\t{ex.InnerException.Message.Replace("\n", "\n\t")}");
 
-            Console.Error.WriteLine("Project will be skipped.");
+            Console.Error.WriteLine("[ERRO] Project will be skipped.");
         } finally {
             if (Directory.Exists(tmpProjectPath))
                 Directory.Delete(tmpProjectPath, true);
+            Console.WriteLine($"[INFO] Done {projectName}");
         }
     }
 
     private void EnsureEmptyFolder(string tmpProjectPath) {
         if (Directory.Exists(tmpProjectPath)) {
+            Console.WriteLine($"[DBG ] EnsureEmptyFolder: Folder {tmpProjectPath} exists, delete");
             Directory.Delete(tmpProjectPath, true);
         }
         Directory.CreateDirectory(tmpProjectPath);
+        Console.WriteLine($"[DBG ] EnsureEmptyFolder: Folder {tmpProjectPath} created");
     }
 
     private void CloneGitRepo(string tmpProjectPath, string gitPath, string branch) {
@@ -111,7 +126,6 @@ class DeliveryService {
         proc.Start();
         
         var output = proc.StandardOutput.ReadToEnd();
-        Console.WriteLine(output);
 
         var error = proc.StandardError.ReadToEnd();
         proc.WaitForExit();
