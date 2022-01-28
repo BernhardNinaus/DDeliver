@@ -85,9 +85,7 @@ switch (args[0]) {
         return;
 
     case "--hook":
-        var location = System.Reflection.Assembly.GetEntryAssembly()?.Location;
-        if (location is null)
-            throw new Exception("Could not find den installation path of DDeliver.");
+        var location = System.AppContext.BaseDirectory;
 
         foreach (var projectPath in serverConfig.Projects.Select(s => s.Value.GitRepo).Distinct()) {
             var scriptPath = $"{projectPath}/hooks/post-receive";
