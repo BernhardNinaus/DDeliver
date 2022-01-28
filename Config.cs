@@ -13,6 +13,7 @@ class ProjectConfig {
     public string OutputFolder { get; set; } = string.Empty;
     public bool CleanOutpuFolder { get; set; } = false;
     public string? SystemdService { get; set; }
+    public string? UserGroup { get; set; }
 }
 
 static class ConfigProvider {
@@ -39,7 +40,8 @@ static class ConfigProvider {
                     OnBranch = "main",
                     BuildParams = new[] {
                         "--self-contained",
-                    }
+                    },
+                    UserGroup = "www-data:www-data"
                 }
             }
         }
