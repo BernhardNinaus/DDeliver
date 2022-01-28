@@ -38,8 +38,10 @@ class DeliveryService {
             if (!string.IsNullOrWhiteSpace(project.UserGroup))
                 Chown.SetUserGroup(project.UserGroup, project.OutputFolder, true);
 
-            if (!string.IsNullOrWhiteSpace(project.SystemdService) && needsStart)
+            if (!string.IsNullOrWhiteSpace(project.SystemdService) && needsStart) {
                 Systemd.Start(project.SystemdService);
+                System.Threading.Thread.Sleep(2 * 1000);
+            }
 
         } catch (Exception ex) {
             Console.Error.WriteLine($"Expection while delivering project '{projectName}':");
