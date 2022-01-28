@@ -60,7 +60,7 @@ static class Systemd {
         var isActive = _proc.StandardOutput.ReadToEnd() == "inactive\n";
         _proc.WaitForExit();
 
-        if (_proc.ExitCode != 0) {
+        if (_proc.ExitCode != 0 && _proc.ExitCode != 3) {
             throw new Exception($"Error while checking if service '{service}' " +
                 $"is active (exitcode: {_proc.ExitCode}).",
                 new Exception(_proc.StandardError.ReadToEnd()));
