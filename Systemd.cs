@@ -54,7 +54,7 @@ static class Systemd {
     /// </summary>
     /// <returns>True when the service is running.</returns>
     public static bool IsActive(string service) {
-        _proc.StartInfo.Arguments = $"is-activ {ExtensionMethods.EscapeForCommand(service)}";
+        _proc.StartInfo.Arguments = $"is-active {ExtensionMethods.EscapeForCommand(service)}";
         _proc.Start();
 
         var isActive = _proc.StandardOutput.ReadToEnd() == "inactive\n";
