@@ -89,8 +89,12 @@ switch (args[0]) {
         return;
 
     case "--hook":
-        var location = System.AppContext.BaseDirectory;
-        Console.WriteLine("[INFO] Start hooking repos");
+        var location = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+        if (location is null) {
+            Console.Error.WriteLine("[ERRO] Couldn find Folder of executing file");
+        }
+
+        Console.WriteLine($"[INFO] Start hooking repos to {location}");
         foreach (var projectPath in serverConfig.Projects.Select(s => s.Value.GitRepo).Distinct()) {
             Console.WriteLine($"[INFO] Hooking {projectPath}");
 
