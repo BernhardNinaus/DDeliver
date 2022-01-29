@@ -76,7 +76,7 @@ switch (args[0]) {
 
         var effectedRepo = args[1];
         
-        Console.WriteLine($"[INFO] Deliver holy repo '{effectedRepo}'");
+        Console.WriteLine($"[INFO] Deliver holy(!) repo '{effectedRepo}'");
         var projects = serverConfig.Projects.Where(w => effectedRepo == w.Value.GitRepo);
 
         if (args.Length >= 3) {
