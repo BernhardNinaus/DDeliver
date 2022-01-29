@@ -40,7 +40,7 @@ ServerConfig serverConfig;
 try { 
     serverConfig = ConfigProvider.GetConfig(deserializer);
 } catch (Exception ex) {
-    Console.WriteLine(@$"Could not load configuration at: {ConfigProvider.ConfigFilePath}
+    Console.WriteLine(@$"Could not load configuration
     Expection: {ex.Message}
         ({ex.InnerException?.Message})");
     return;

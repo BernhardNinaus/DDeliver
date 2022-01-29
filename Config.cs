@@ -17,7 +17,7 @@ class ProjectConfig {
 }
 
 static class ConfigProvider {
-    public static string ConfigFilePath = Path.GetFullPath("./DDconfig.yml");
+    public static string ConfigFilePath = "/etc/ddeliver/config.yml";
 
     public static readonly ServerConfig ExampleConfig = new ServerConfig() {
         DefaultBuildParam = new [] {
