@@ -42,13 +42,13 @@ class DeliveryService {
                 EnsureEmptyFolder(project.OutputFolder);
             }
 
-            Console.WriteLine($"[INFO] Copy to output folder");
-            CopyCompilationToOutput(tmpCompileOutput, project.OutputFolder);
-
             Console.WriteLine($"[INFO] Need to set user and group?");
             if (!string.IsNullOrWhiteSpace(project.UserGroup)) {
-                Chown.SetUserGroup(project.UserGroup, project.OutputFolder, true);
+                Chown.SetUserGroup(project.UserGroup, tmpCompileOutput, true);
             }
+
+            Console.WriteLine($"[INFO] Copy to output folder");
+            CopyCompilationToOutput(tmpCompileOutput, project.OutputFolder);
 
             if (!string.IsNullOrWhiteSpace(project.SystemdService) && needsStart) {
                 Console.WriteLine($"[INFO] Restart systemtd service");
